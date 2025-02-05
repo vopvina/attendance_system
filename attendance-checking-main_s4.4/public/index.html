@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #2e2e2e;
+            color: #f0f0f0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: #222;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #f7f7f7;
+            text-transform: uppercase;
+        }
+
+        nav {
+            margin-top: 20px;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-links li {
+            margin: 0 25px;
+        }
+
+        .nav-links a {
+            color: #f7f7f7;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #29a7d7;
+            text-decoration: underline;
+        }
+
+        .container {
+            width: 80%;
+            margin: 2rem auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .attendance-form {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+
+        .attendance-form input, .attendance-form select, .attendance-form button {
+            padding: 12px;
+            font-size: 1rem;
+            border-radius: 25px;
+            border: none;
+            outline: none;
+        }
+
+        .attendance-form input, .attendance-form select {
+            width: 220px;
+        }
+
+        .attendance-form button {
+            background-color: #29a7d7;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .attendance-form button:hover {
+            background-color: #1f8c9c;
+        }
+
+        .attendance-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+
+        .attendance-table th, .attendance-table td {
+            padding: 12px;
+            border: 1px solid #444;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .attendance-table th {
+            background-color: #333;
+            color: #f7f7f7;
+        }
+
+        .attendance-table td {
+            background-color: #444;
+            color: #ddd;
+        }
+
+        .action-buttons button {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            border-radius: 25px;
+            border: none;
+            transition: background-color 0.3s;
+        }
+
+        .action-buttons .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .action-buttons .delete-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .action-buttons .update-btn {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .action-buttons .update-btn:hover {
+            background-color: #e67e22;
+        }
+
+        footer {
+            background-color: #222;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: auto;
+        }
+
+        footer a {
+            color: #29a7d7;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .student-list {
+            margin-bottom: 30px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #333;
+        }
+
+        .student-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .student-list li {
+            margin: 8px 0;
+            padding: 12px;
+            background-color: #444;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-button-container {
+            width: 95%;
+            display: flex;
+            justify-content: flex-end; 
+            padding: 1rem;
+            background-color: #2e2e2e;
+        }
+
+        .back-button {
+            padding: 12px 20px;
+            background-color: #29a7d7;
+            color: white;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #1f8c9c;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo">Set Attendance</div>
+            <nav>
+                
+                <div class="nav-toggle"></div>
+            </nav>
+        </div>
+
+
+    </header>
+
+    <section id="attendance-management">
+        <div class="container">
+            <div class="attendance-form">
+                <input type="text" id="employeeName" placeholder="Enter Student Id">
+                <button onclick="addEmployee()">Add Student</button>
+            </div>
+
+            <!-- Display List of Added Employees -->
+            <div class="employee-list">
+                <h3>Added Students</h3>
+                <ul id="employeeList"></ul>
+            </div>
+
+            <!-- Mark Attendance Section -->
+            <form id="attendanceForm" class="attendance-form">
+                <input type="date" id="attendanceDate" />
+                <select id="employeeSelect">
+                    <option value="">Select Student</option>
+                </select>
+                <select id="attendanceStatus">
+                    <option value="Present">Present</option>
+                    <option value="Late">Late</option>
+                    <option value="Absent">Absent</option>
+                </select>
+                <button type="button" onclick="markAttendance()">Mark Attendance</button>
+            </form>
+
+            <table class="attendance-table">
+                <thead>
+                    <tr>
+                        <th>Student id</th>
+                        <th>Date</th>
+                        <th>Attendance Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="attendanceList"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <div class="back-button-container">
+        <button class="back-button" onclick="goToLogin()">Вернуться к логину</button>
+    </div>    
+
+    <script>
+
+
+        const API_URL = 'http://localhost:3000/attendance'; // URL API
+        const STUDENT_API_URL = 'http://localhost:3000/attendance/students/mega'; // URL API
+        let attendanceData = []; // Массив для хранения записей
+        let employees = []; // Массив для хранения добавленных сотрудников
+
+        async function loadAttendance() {
+            try {
+                const response = await fetch(API_URL);
+                attendanceData = await response.json();
+                updateAttendanceTable();
+            } catch (error) {
+                console.error('Error fetching attendance data:', error);
+            }
+        }
+
+        function updateAttendanceTable() {
+            const tableBody = document.getElementById('attendanceList');
+            tableBody.innerHTML = '';
+
+            attendanceData.forEach((entry, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${entry.userId}</td>
+                    <td>${new Date(entry.date).toLocaleDateString()}</td>
+                    <td>${entry.status}</td>
+                    <td>
+                        <button class="update-btn" onclick="editAttendance(${index})">Update</button>
+                        <button class="delete-btn" onclick="deleteAttendance(${index})">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function addEmployee() {
+            const employeeName = document.getElementById('employeeName').value;
+
+            if (!employeeName) {
+                return;
+            }
+
+            employees.push(employeeName);
+
+            const employeeList = document.getElementById('employeeList');
+            const li = document.createElement('li');
+            li.textContent = employeeName;
+            employeeList.appendChild(li);
+
+            const employeeSelect = document.getElementById('employeeSelect');
+            const option = document.createElement('option');
+            option.value = employeeName;
+            option.textContent = employeeName;
+            employeeSelect.appendChild(option);
+
+            document.getElementById('employeeName').value = '';
+        }
+
+        async function markAttendance() {
+    const employeeName = document.getElementById('employeeSelect').value;
+    const date = document.getElementById('attendanceDate').value;
+    const status = document.getElementById('attendanceStatus').value;
+
+    if (!employeeName || !date || !status) {
+        return;
+    }
+
+    const form = document.getElementById('attendanceForm');
+    const editIndex = form.getAttribute('data-edit-index'); // Проверяем, есть ли запись для редактирования
+
+    if (editIndex !== null) {
+        // Обновление существующей записи
+        const record = attendanceData[editIndex];
+        try {
+            const response = await fetch(`${API_URL}/${record._id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: employeeName, date, status }),
+            });
+
+            if (response.ok) {
+                const updatedRecord = await response.json();
+                attendanceData[editIndex] = updatedRecord; // Обновляем локальные данные
+                updateAttendanceTable();
+            } else {
+                const error = await response.json();
+            }
+        } catch (error) {
+            console.error('Error updating attendance:', error);
+        }
+
+        form.removeAttribute('data-edit-index'); // Убираем флаг редактирования
+    } else {
+        // Добавление новой записи
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: employeeName, date, status }),
+            });
+
+            if (response.ok) {
+                const newRecord = await response.json();
+                attendanceData.push(newRecord);
+                updateAttendanceTable();
+            } else {
+                const error = await response.json();
+            }
+        } catch (error) {
+            console.error('Error marking attendance:', error);
+        }
+    }
+
+    // Сбрасываем форму
+    document.getElementById('employeeSelect').value = '';
+    document.getElementById('attendanceDate').value = '';
+    document.getElementById('attendanceStatus').value = 'Present';
+}
+async function loadStudents() {
+    try {
+        const response = await fetch(STUDENT_API_URL);
+        const students = await response.json();
+
+        const employeeSelect = document.getElementById('employeeSelect');
+        employeeSelect.innerHTML = '<option value="">Select Student</option>';
+
+        // Add console.log to debug the response
+        console.log('Students data:', students);
+
+        if (Array.isArray(students)) {
+            students.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.id || student._id; // Handle both possible ID formats
+                option.textContent = student.id || student._id; // Handle both possible ID formats
+                employeeSelect.appendChild(option);
+            });
+        } else {
+            console.error('Students data is not an array:', students);
+        }
+
+    } catch (error) {
+        console.error('Error fetching students:', error);
+    }
+}
+
+        function editAttendance(index) {
+            const record = attendanceData[index];
+            document.getElementById('employeeSelect').value = record.userId;
+            document.getElementById('attendanceDate').value = new Date(record.date).toISOString().split('T')[0];
+            document.getElementById('attendanceStatus').value = record.status;
+
+            const form = document.getElementById('attendanceForm');
+            form.setAttribute('data-edit-index', index); // Указываем индекс редактируемой записи
+        }
+
+
+        async function deleteAttendance(index) {
+            const record = attendanceData[index];
+            try {
+                const response = await fetch(`${API_URL}/${record._id}`, {
+                    method: 'DELETE',
+                });
+
+                if (response.ok) {
+                    attendanceData.splice(index, 1);
+                    updateAttendanceTable();
+                } else {
+                    console.error('Failed to delete record.');
+                }
+            } catch (error) {
+                console.error('Error deleting attendance record:', error);
+            }
+        }
+
+        function goToLogin() {
+            window.location.href = '/';
+        }
+
+        window.onload = async function () {
+            console.log('Page loaded, starting to fetch data...');
+            try {
+                console.log('Loading attendance...');
+                await loadAttendance();
+                console.log('Loading students...');
+                await loadStudents();
+                console.log('All data loaded successfully');
+            } catch (error) {
+                console.error('Error during initial data load:', error);
+            }
+};
+
+        
+    </script>
+</body>
+</html>

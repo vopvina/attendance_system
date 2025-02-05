@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Данные ученика</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #2e2e2e;
+            color: #f0f0f0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .container {
+            margin: 2rem auto;
+            width: 80%;
+            background-color: #333;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        h3, h4 {
+            margin: 0.5rem 0;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 1rem; 
+        }
+
+        ul li {
+            margin: 0.5rem 0;
+        }
+
+        .back-button-container {
+            width: 95%;
+            display: flex;
+            justify-content: flex-end; 
+            padding: 1rem;
+            background-color: #2e2e2e;
+        }
+
+        .back-button {
+            padding: 12px 20px;
+            background-color: #29a7d7;
+            color: white;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #1f8c9c;
+        }
+
+        #studentData {
+            padding-left: 1rem;
+        }
+    </style>
+    <script>
+        async function fetchStudentData() {
+            const userId = localStorage.getItem('userId');
+
+            if (!userId) {
+                document.getElementById('studentData').innerHTML =
+                    '<p style="color: red;">Логин не найден. Пожалуйста, войдите снова.</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/attendance/student/${userId}`);
+                if (!response.ok) {
+                    throw new Error('Данные не найдены или ошибка сервера');
+                }
+
+                const data = await response.json();
+
+                // Отображаем данные ученика
+                const result = `
+                    <h3>ID пользователя: ${userId}</h3>
+                    <h4>Посещения:</h4>
+                    <ul>
+                        ${data
+                            .map(record => `<li>${new Date(record.date).toLocaleDateString()}: ${record.status}</li>`)
+                            .join('')}
+                    </ul>
+                `;
+
+                document.getElementById('studentData').innerHTML = result;
+            } catch (error) {
+                document.getElementById('studentData').innerHTML =
+                    `<p style="color: red;">${error.message}</p>`;
+            }
+        }
+
+        function goToLogin() {
+            window.location.href = '/';
+        }
+
+        // Загружаем данные при загрузке страницы
+        window.onload = fetchStudentData;
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div id="studentData"></div>
+    </div>
+    <div class="back-button-container">
+        <button class="back-button" onclick="goToLogin()">Вернуться к логину</button>
+    </div>
+</body>
+</html>

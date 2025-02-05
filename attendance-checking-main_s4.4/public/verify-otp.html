@@ -1,0 +1,147 @@
+
+<!-- verify-otp.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #2e2e2e;
+            color: #f0f0f0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background-color: #333;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #29a7d7;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #f0f0f0;
+        }
+
+        input {
+            width: 94%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 4px;
+            background-color: #444;
+            color: #f0f0f0;
+            margin-bottom: 1rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: #29a7d7;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #1f8c9c;
+        }
+
+        .back-button {
+            margin-top: 1rem;
+            background-color: #666;
+        }
+
+        .back-button:hover {
+            background-color: #555;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .success-message {
+            color: #2ecc71;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Verify OTP</h2>
+        <div id="error-message" class="error-message" style="display: none;"></div>
+        <div id="success-message" class="success-message" style="display: none;"></div>
+        
+        <form id="otpForm">
+            <div class="form-group">
+                <label for="otp">Enter OTP</label>
+                <input type="text" id="otp" required>
+            </div>
+            <button type="submit">Verify OTP</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('otpForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const otp = document.getElementById('otp').value;
+            const userId = localStorage.getItem('resetUserId');
+
+            try {
+                const response = await fetch('/otp/check', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId, otp })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.location.href = '/new-password.html';
+                } else {
+                    showError(data.error);
+                }
+            } catch (error) {
+                showError('Failed to verify OTP');
+            }
+        });
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
